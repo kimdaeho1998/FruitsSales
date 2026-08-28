@@ -1,0 +1,1 @@
+export default function NotFound() { return <main className="mx-auto max-w-xl p-6"><h1 className="text-2xl font-semibold">페이지를 찾을 수 없습니다</h1><p className="mt-2 text-[var(--muted-foreground)]">주소를 확인하거나 홈으로 돌아가 주세요.</p></main>; }

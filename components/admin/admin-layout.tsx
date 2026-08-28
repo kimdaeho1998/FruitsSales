@@ -1,0 +1,4 @@
+import Link from "next/link";
+export function AdminHeader() { return <header className="border-b border-[var(--border)] bg-[var(--surface)] px-4 py-4 font-semibold">FruitsSales 관리자</header>; }
+export function AdminSidebar() { return <nav aria-label="관리자 메뉴" className="flex gap-3 overflow-x-auto border-b border-[var(--border)] px-4 py-3 text-sm md:flex-col md:border-b-0 md:border-r">{[["/admin/dashboard","대시보드"],["/admin/seasons","시즌"],["/admin/products","상품"],["/admin/orders","주문"],["/admin/shipping","배송"],["/admin/settings","설정"]].map(([href,label]) => <Link key={href} href={href}>{label}</Link>)}</nav>; }
+export function AdminContainer({ children }: Readonly<{ children: React.ReactNode }>) { return <div className="min-h-screen bg-[var(--muted)]"><AdminHeader/><div className="md:grid md:grid-cols-[12rem_1fr]"><AdminSidebar/><main className="p-4 sm:p-6">{children}</main></div></div>; }

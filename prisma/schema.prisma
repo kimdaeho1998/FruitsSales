@@ -1,0 +1,113 @@
+generator client {
+ provider = "prisma-client-js"
+}
+datasource db {
+ provider = "postgresql"
+ url = env("DATABASE_URL")
+}
+enum UserRole { OWNER ADMIN }
+model User {
+ id String @id @default(uuid()) @db.Uuid
+ username String @unique
+ passwordHash String
+ name String
+ role UserRole @default(ADMIN)
+ isActive Boolean @default(true)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@map("users")
+}
+model Season {
+ id String @id @default(uuid()) @db.Uuid
+ year Int
+ type SeasonType
+ name String
+ status SeasonStatus @default(UPCOMING)
+ products Product[]
+ @@map("seasons")
+}
+model Product {
+ id String @id @default(uuid()) @db.Uuid
+ seasonId String @db.Uuid
+ name String
+ slug String @unique
+ category ProductCategory
+ saleStatus SaleStatus @default(ACTIVE)
+ season Season @relation(fields: [seasonId], references: [id])
+ variants ProductVariant[]
+ images ProductImage[]
+ @@map("products")
+}
+model ProductVariant {
+ id String @id @default(uuid()) @db.Uuid
+ productId String @db.Uuid
+ optionName String
+ price Int
+ stockStatus StockStatus @default(IN_STOCK)
+ saleStatus SaleStatus @default(ACTIVE)
+ product Product @relation(fields: [productId], references: [id])
+ orderItems OrderItem[]
+ @@map("product_variants")
+}
+model ProductImage {
+ id String @id @default(uuid()) @db.Uuid
+ productId String @db.Uuid
+ imageUrl String
+ imageType ProductImageType
+ product Product @relation(fields: [productId], references: [id])
+ @@map("product_images")
+}
+model Order {
+ id String @id @default(uuid()) @db.Uuid
+ orderNumber String @unique
+ customerName String
+ customerPhone String
+ receiverName String
+ receiverPhone String
+ postalCode String
+ address1 String
+ subtotalAmount Int
+ shippingAmount Int
+ totalAmount Int
+ orderStatus OrderStatus @default(PAYMENT_PENDING)
+ paymentStatus PaymentStatus @default(READY)
+ items OrderItem[]
+ payments Payment[]
+ shipments Shipment[]
+ @@map("orders")
+}
+model OrderItem {
+ id String @id @default(uuid()) @db.Uuid
+ orderId String @db.Uuid
+ variantId String @db.Uuid
+ productNameSnapshot String
+ optionNameSnapshot String
+ quantity Int
+ unitPrice Int
+ totalPrice Int
+ order Order @relation(fields: [orderId], references: [id])
+ variant ProductVariant @relation(fields: [variantId], references: [id])
+ @@map("order_items")
+}
+model Payment {
+ id String @id @default(uuid()) @db.Uuid
+ orderId String @db.Uuid
+ provider PaymentProvider @default(TOSS)
+ requestedAmount Int
+ status PaymentStatus @default(READY)
+ order Order @relation(fields: [orderId], references: [id])
+ @@map("payments")
+}
+model Shipment {
+ id String @id @default(uuid()) @db.Uuid
+ orderId String @db.Uuid
+ status ShipmentStatus @default(READY)
+ order Order @relation(fields: [orderId], references: [id])
+ @@map("shipments")
+}
+model SiteSetting {
+ id String @id @default(uuid()) @db.Uuid
+ key String @unique
+ value String
+ @@map("site_settings")
+}
